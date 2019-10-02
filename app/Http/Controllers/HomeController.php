@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Note;
-use foo\bar;
+use App\Question;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Http\Request;
-use Mockery\Matcher\Not;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -16,8 +16,10 @@ class HomeController extends Controller
     }
 
     public function index() {
+        $questions = Question::paginate(10);
         return view('home', [
-            'title' => 'E-Note|Admin - Home'
+            'title' => 'E-Note|Admin - Home',
+            'questions' => $questions
         ]);
     }
 
@@ -170,5 +172,97 @@ class HomeController extends Controller
         toastr()->success('Note is now Published!');
         return response()->json(['status' => 'ok'], 200);
     }
+
+    public function showQuestion($id) {
+        $question = Question::where('question_id', $id)->first();
+        if ($question instanceof Question) {
+            $user = DB::table('students')->where('student_id', $question->question_from)->get();
+            return view('question', [
+                'question' => $question,
+                'author' => $user[0]->student_fullname
+            ]);
+        }
+        toastr()->error('Invalid ID');
+        return back();
+    }
+
+    public function approve(Request $request) {
+        if ($request->has('id')) {
+            $question = Question::where('question_id', $request->get('id'))->first();
+            if ($question instanceof Question) {
+                DB::table('questions')->where('question_id', $request->get('id'))->update([
+                    'question_status' => 1
+                ]);
+                return response()->json(['ok'], 200);
+            }
+            return response()->json(['fail'], 422);
+        }
+        return response()->json(['fail'], 422);
+    }
+
+    public function getTypeSuggestion(Request $request) {
+        $arr = [
+            'science' => ['tech', 'photosyntheis', 'cells', 'biology', 'mammalia', 'carniovore', 'chemistry', 'relativity', 'planck'],
+            'math' => ['trignometry', 'cartesian', 'algebra', 'planer', 'mathematics', 'sin', 'cosine', 'tangent']
+        ];
+        $count = [
+            'math' => 0,
+            'science' => 0
+        ];
+        if ($request->has('id')) {
+            $question = Question::where('question_id', $request->get('id'))->first();
+            if ($question instanceof Question) {
+                foreach ($arr as $row) {
+                    foreach ($row as $col) {
+                        if (strchr($question->question_content, $col)) {
+                            if($row === 'math'){
+                                $count['math']++;
+                            }
+                            else{
+                                $count['science']++;
+                            }
+
+                        }
+                    }
+                }
+                if ($count['math'] > $count['science']) {
+                    return response()->json([
+                        'type' => 'Math'
+                    ]);
+                }
+                return response()->json([
+                    'type' => 'Science'
+                ]);
+            }
+        }
+        return response()->json(['fail'], 422);
+    }
+
+    public function deleteQuestion(Request $request) {
+        if ($request->has('id')) {
+            $question = Question::where('question_id', $request->get('id'))->first();
+            if ($question instanceof Question) {
+                DB::table('questions')->where('question_id', $request->get('id'))->delete();
+                return response()->json(['ok'], 200);
+            }
+            return response()->json(['fail'], 422);
+        }
+        return response()->json(['fail'], 422);
+    }
+
+    public function saveType(Request $request) {
+        if ($request->has('id') && $request->has('value')) {
+            $question = Question::where('question_id', $request->get('id'))->first();
+            if ($question instanceof Question) {
+                DB::table('questions')->where('question_id', $request->get('id'))->update([
+                    'type' => $request->get('value')
+                ]);
+                return response()->json(['ok'], 200);
+            }
+            return response()->json(['fail'], 422);
+        }
+        return response()->json(['fail'], 422);
+    }
+
 
 }

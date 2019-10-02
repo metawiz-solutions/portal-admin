@@ -35,7 +35,7 @@
                                             <input type="text" name="title" id="titleText" class="form-control" value="{{$note->title}}">
                                         </div>
                                         <div class="col-md-1">
-                                            <button class="btn btn-primary btn-sm mt-1" onclick="updateField('title','titleText')">Save</button>
+                                            <button class="btn btn-primary btn-sm mt-1" onclick="updateField('title','titleText')"><i data-feather="save"></i> Save</button>
                                         </div>
                                     </div>
 
@@ -49,7 +49,7 @@
                                             <input type="text" name="grade" id="gradeText" class="form-control" value="{{$note->grade}}">
                                         </div>
                                         <div class="col-md-1">
-                                            <button class="btn btn-primary btn-sm mt-1" onclick="updateField('grade','gradeText')">Save</button>
+                                            <button class="btn btn-primary btn-sm mt-1" onclick="updateField('grade','gradeText')"><i data-feather="save"></i> Save</button>
                                         </div>
                                     </div>
                                 </td>
@@ -62,7 +62,7 @@
                                             <input type="text" name="subject" id="subjectText" class="form-control" value="{{$note->subject}}">
                                         </div>
                                         <div class="col-md-1">
-                                            <button class="btn btn-primary btn-sm mt-1" onclick="updateField('subject','subjectText')">Save</button>
+                                            <button class="btn btn-primary btn-sm mt-1" onclick="updateField('subject','subjectText')"><i data-feather="save"></i> Save</button>
                                         </div>
                                     </div>
                                 </td>
@@ -73,7 +73,7 @@
                                     <textarea id="editor" name="editor" rows="10">
                                         {{$note->summarized_text}}
                                     </textarea>
-                                    <button class="btn btn-primary btn-sm mt-1 btn-block" onclick="updateField('summarized_text','editor', false)">Save</button>
+                                    <button class="btn btn-primary btn-sm mt-1 btn-block" onclick="updateField('summarized_text','editor', false)"><i data-feather="save"></i> Save</button>
                                 </td>
                             </tr>
                             <tr>
