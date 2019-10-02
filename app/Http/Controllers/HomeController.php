@@ -215,13 +215,11 @@ class HomeController extends Controller
                 foreach ($arr as $row) {
                     foreach ($row as $col) {
                         if (strchr($question->question_content, $col)) {
-                            if($row === 'math'){
+                            if ($row === 'math') {
                                 $count['math']++;
-                            }
-                            else{
+                            } else {
                                 $count['science']++;
                             }
-
                         }
                     }
                 }
