@@ -85,9 +85,9 @@
                                 <td><strong>Actions</strong></td>
                                 <td>
                                     @if($note->status === 2)
-                                        <a href="{{route('show.summarize.note',['id'=>$note->id])}}" class="btn btn-outline-info btn-sm mr-4"><i data-feather="refresh-ccw"></i> Retry</a>
+                                        <button class="btn btn-outline-info btn-sm mr-4"><i data-feather="refresh-ccw"></i> Retry</button>
                                     @else
-                                        <a href="{{route('summarize.note',['id'=>$note->id])}}" class="btn btn-outline-primary btn-sm mr-4"><i data-feather="align-center"></i> Summarize</a>
+                                        <button onclick="summarize()" class="btn btn-outline-primary btn-sm mr-4"><i data-feather="align-center"></i> Summarize</button>
                                     @endif
 
                                     <a href="" class="btn btn-outline-danger btn-sm" onclick="return deleteNote()"><i data-feather="trash"></i> Delete</a>
@@ -118,6 +118,15 @@
             })
         }
 
+        function summarize() {
+            axios.get('{{route('summarize.note',['id'=>$note->id])}}').then(res => {
+                window.location.href = '{{route('show.note',['id' => $note->id])}}';
+            }).catch(err => {
+                console.log(err);
+                toastr.error('Error in Retry!');
+            });
+        }
+
         function deleteNote() {
             if (window.confirm('Are you sure?')) {
                 axios.delete('{{route('delete.note',['id' => $note->id])}}').then(() => {
@@ -125,8 +134,7 @@
                 }).catch(err => {
                     toastr.error('Error deleting Note');
                 })
-            }
-            else{
+            } else {
                 console.log('cancelled');
             }
         }

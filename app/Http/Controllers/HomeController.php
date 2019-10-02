@@ -86,12 +86,12 @@ class HomeController extends Controller
         $client = new Client();
         $note = Note::findOrFail($id);
         try {
-            $guzzleRes = $client->post('http://ec2-13-58-156-104.us-east-2.compute.amazonaws.com:8080/summarize', [
+            $guzzleRes = $client->post('http://ec2-13-58-156-104.us-east-2.compute.amazonaws.com:8100/summarize', [
                 RequestOptions::JSON => ['text' => $note->scraped_text]
             ]);
             if ($guzzleRes->getStatusCode() === 200) {
                 $summarized = json_decode($guzzleRes->getBody()->getContents())->result;
-                $note->scraped_text = $summarized;
+                $note->summarized_text = $summarized;
                 $note->status = 3;
                 $note->save();
                 toastr()->success('Text has been summarized.');
@@ -108,7 +108,7 @@ class HomeController extends Controller
     }
 
     public function showNotes() {
-        $notes = Note::whereIn('status', [3, 4])->paginate(10);
+        $notes = Note::whereIn('status', [3, 4, 5])->paginate(10);
         return view('notes', [
             'title' => 'E-Note|Admin - Notes',
             'notes' => $notes

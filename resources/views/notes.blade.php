@@ -34,7 +34,9 @@
                                     @elseif($note->status === 3)
                                         <td><h4><span class="badge badge-success">summarization success</span></h4></td>
                                     @elseif($note->status === 4)
-                                        <td><h4><span class="badge badge-danger">summarization fail</span></h4>/td>
+                                        <td><h4><span class="badge badge-danger">summarization fail</span></h4>
+                                    @elseif($note->status === 5)
+                                        <td><h4><span class="badge badge-info">published</span></h4>
                                     @endif
                                     <td>
                                         <a href="{{route('show.note',['id'=>$note->id])}}" class="btn btn-success btn-sm"><i data-feather="eye"></i></a>

@@ -90,7 +90,7 @@
                                             <i data-feather="align-center"></i> Publish
                                         </button>
                                     @endif
-                                    <a href="" class="btn btn-outline-danger btn-sm"><i data-feather="trash"></i> Delete</a>
+                                    <button onclick="deleteNote()" class="btn btn-outline-danger btn-sm"><i data-feather="trash"></i> Delete</button>
                                 </td>
                             </tr>
                         </table>
