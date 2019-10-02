@@ -5,7 +5,7 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{route('home')}}">Home</a></li>
                 <li class="breadcrumb-item active"><a href="{{route('summarize')}}">Summarize</a></li>
-                <li class="breadcrumb-item active">1</li>
+                <li class="breadcrumb-item active">{{$note->id}} | {{$note->title}}</li>
             </ol>
         </nav>
         <div class="row justify-content-center">
@@ -87,7 +87,7 @@
                                     @if($note->status === 2)
                                         <a href="{{route('show.summarize.note',['id'=>$note->id])}}" class="btn btn-outline-info btn-sm mr-4"><i data-feather="refresh-ccw"></i> Retry</a>
                                     @else
-                                        <a href="{{route('show.summarize.note',['id'=>$note->id])}}" class="btn btn-outline-primary btn-sm mr-4"><i data-feather="align-center"></i> Summarize</a>
+                                        <a href="{{route('summarize.note',['id'=>$note->id])}}" class="btn btn-outline-primary btn-sm mr-4"><i data-feather="align-center"></i> Summarize</a>
                                     @endif
 
                                     <a href="" class="btn btn-outline-danger btn-sm" onclick="return deleteNote()"><i data-feather="trash"></i> Delete</a>

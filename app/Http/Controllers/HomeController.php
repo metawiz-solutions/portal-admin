@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Note;
 use foo\bar;
 use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use Illuminate\Http\Request;
 use Mockery\Matcher\Not;
 
@@ -33,19 +34,24 @@ class HomeController extends Controller
                 'status' => 0,
                 'added_by' => auth()->user()->email
             ]);
-//            $note->save();
             $client = new Client();
             try {
-                $guzzleRes = $client->request('GET', 'http://ec2-13-58-156-104.us-east-2.compute.amazonaws.com:8090/scrap', [
-                    'url' => $request->get('url')
+                $guzzleRes = $client->post('http://ec2-13-58-156-104.us-east-2.compute.amazonaws.com:8090/scrap', [
+                    RequestOptions::JSON => ['text' => $request->get('url')]
                 ]);
                 if ($guzzleRes->getStatusCode() === 200) {
-                    return response()->json([
-                        'body' => $guzzleRes->getBody()
-                    ]);
+                    $scraped = json_decode($guzzleRes->getBody()->getContents())->result;
+                    $note->scraped_text = $scraped;
+                    $note->status = 1;
+                    $note->save();
+                    toastr()->success('URL has been scraped.');
+                    return back();
+                } else {
+                    $note->status = 2;
+                    $note->save();
+                    toastr()->error('URL scrape failed!.');
+                    return back();
                 }
-                toastr()->success('URL has been added to scrape.');
-                return back();
             } catch (\Exception $exception) {
                 return response()->json($exception->getMessage());
             }
@@ -76,8 +82,29 @@ class HomeController extends Controller
     }
 
     // process
-    public function summarizeNote() {
-
+    public function summarizeNote($id) {
+        $client = new Client();
+        $note = Note::findOrFail($id);
+        try {
+            $guzzleRes = $client->post('http://ec2-13-58-156-104.us-east-2.compute.amazonaws.com:8080/summarize', [
+                RequestOptions::JSON => ['text' => $note->scraped_text]
+            ]);
+            if ($guzzleRes->getStatusCode() === 200) {
+                $summarized = json_decode($guzzleRes->getBody()->getContents())->result;
+                $note->scraped_text = $summarized;
+                $note->status = 3;
+                $note->save();
+                toastr()->success('Text has been summarized.');
+                return back();
+            } else {
+                $note->status = 4;
+                $note->save();
+                toastr()->error('Summarization failed!.');
+                return back();
+            }
+        } catch (\Exception $exception) {
+            return response()->json($exception->getMessage());
+        }
     }
 
     public function showNotes() {
@@ -126,7 +153,6 @@ class HomeController extends Controller
 
     public function deleteNote($id) {
         toastr()->success('Note Deleted!');
-        return $id;
         $note = Note::findOrFail($id);
         try {
             $note->delete();
@@ -135,6 +161,14 @@ class HomeController extends Controller
         } catch (\Exception $exception) {
             return response()->json(['code' => 500], 500);
         }
+    }
+
+    public function publish($id) {
+        $note = Note::findOrFail($id);
+        $note->status = 5;
+        $note->save();
+        toastr()->success('Note is now Published!');
+        return response()->json(['status' => 'ok'], 200);
     }
 
 }

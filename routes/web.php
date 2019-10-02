@@ -33,3 +33,4 @@ Route::get('/notes/{id}','HomeController@showNote')->name('show.note');
 
 Route::post('/notes/{id}/update','HomeController@updateNoteAttributes')->name('update.note.attributes');
 Route::delete('/notes/{id}/delete','HomeController@deleteNote')->name('delete.note');
+Route::post('/notes/{id}/publish','HomeController@publish')->name('publish.note');

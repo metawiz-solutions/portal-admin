@@ -19,14 +19,12 @@
                             </tr>
                             <tr>
                                 <td><strong>Status</strong></td>
-                                @if($note->status === 1)
-                                    <td><h4><span class="badge badge-success">scrape success</span></h4></td>
-                                @elseif($note->status === 2)
-                                    <td><h4><span class="badge badge-danger">scrape failed</span></h4></td>
-                                @elseif($note->status === 3)
+                                @if($note->status === 3)
                                     <td><h4><span class="badge badge-success">summarization success</span></h4></td>
                                 @elseif($note->status === 4)
                                     <td><h4><span class="badge badge-danger">summarization fail</span></h4></td>
+                                @elseif($note->status === 5)
+                                    <td><h4><span class="badge badge-info">published</span></h4></td>
                                 @endif
                             </tr>
                             <tr>
@@ -86,9 +84,11 @@
                                 <td><strong>Actions</strong></td>
                                 <td>
                                     @if($note->status === 4)
-                                        <a href="{{route('show.summarize.note',['id'=>$note->id])}}" class="btn btn-outline-info btn-sm mr-4"><i data-feather="refresh-ccw"></i> Retry Summarization</a>
+                                        <button onclick="retrySummarization()" class="btn btn-outline-info btn-sm mr-4"><i data-feather="refresh-ccw"></i> Retry Summarization</button>
                                     @else
-                                        <a href="{{route('show.summarize.note',['id'=>$note->id])}}" class="btn btn-outline-primary btn-sm mr-4"><i data-feather="align-center"></i> Publish</a>
+                                        <button {{$note->status === 5 ? 'disabled' : ''}} onclick="publishNote()" class="btn btn-outline-primary btn-sm mr-4 {{$note->status === 5 ? 'disabled' : ''}}">
+                                            <i data-feather="align-center"></i> Publish
+                                        </button>
                                     @endif
                                     <a href="" class="btn btn-outline-danger btn-sm"><i data-feather="trash"></i> Delete</a>
                                 </td>
@@ -102,14 +102,11 @@
     <script>
         function updateField(fieldName, element_id, mce = true) {
             let value = null;
-            if(!mce){
+            if (!mce) {
                 value = document.getElementById(element_id).value;
-            }
-            else{
+            } else {
                 value = tinyMCE.getContent(element_id);
             }
-            console.log(value);
-            return 0;
             axios.post('{{route('update.note.attributes',['id'=>$note->id])}}', {
                 fieldName: fieldName,
                 value: value
@@ -132,10 +129,30 @@
                 }).catch(err => {
                     toastr.error('Error deleting Note');
                 })
-            }
-            else{
+            } else {
                 console.log('cancelled');
             }
         }
+
+        function publishNote() {
+            if (confirm('Are you sure?')) {
+                axios.post('{{route('publish.note',['id' => $note->id])}}').then(res => {
+                    window.location.href = window.location.href;
+                }).catch(err => {
+                    console.log(err);
+                    toastr.error('Error publishing!');
+                });
+            }
+        }
+
+        function retrySummarization() {
+            axios.get('{{route('summarize.note',['id'=>$note->id])}}').then(res => {
+                window.location.href = window.location.href;
+            }).catch(err => {
+                console.log(err);
+                toastr.error('Error in Retry!');
+            });
+        }
+
     </script>
 @endsection

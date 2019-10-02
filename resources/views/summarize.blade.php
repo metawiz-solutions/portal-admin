@@ -11,7 +11,7 @@
             <div class="col-md-12">
                 <div class="card shadow">
                     <div class="card-body">
-                        <table class="table table-sm text-center">
+                        <table class="table table-sm text-center mt-4">
                             <thead class="thead-dark">
                             <tr>
                                 <th scope="col">#</th>
@@ -41,11 +41,19 @@
                                     </td>
                                 </tr>
                             @endforeach
+
+                            <tr>
+                                <td colspan="5">
+                                    <div class="row justify-content-center">
+                                        {{$notes->links()}}
+                                    </div>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-                {{$notes->links()}}
+
             </div>
         </div>
     </div>
