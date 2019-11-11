@@ -88,7 +88,7 @@ class HomeController extends Controller
         $client = new Client();
         $note = Note::findOrFail($id);
         try {
-            $guzzleRes = $client->post('http://ec2-13-58-156-104.us-east-2.compute.amazonaws.com:8100/summarize', [
+            $guzzleRes = $client->post('ec2-13-233-38-93.ap-south-1.compute.amazonaws.com:8100/summarize', [
                 RequestOptions::JSON => ['text' => $note->scraped_text]
             ]);
             if ($guzzleRes->getStatusCode() === 200) {
@@ -177,10 +177,18 @@ class HomeController extends Controller
         $question = Question::where('question_id', $id)->first();
         if ($question instanceof Question) {
             $user = DB::table('students')->where('student_id', $question->question_from)->get();
-            return view('question', [
-                'question' => $question,
-                'author' => $user[0]->student_fullname
-            ]);
+            if($user){
+                return view('question', [
+                    'question' => $question,
+                    'author' => $user[0]->student_fullname
+                ]);
+            } else{
+                return view('question', [
+                    'question' => $question,
+                    'author' => 'User Undefined'
+                ]);
+            }
+            
         }
         toastr()->error('Invalid ID');
         return back();
