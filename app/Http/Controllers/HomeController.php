@@ -38,7 +38,7 @@ class HomeController extends Controller
             ]);
             $client = new Client();
             try {
-                $guzzleRes = $client->post('http://ec2-13-58-156-104.us-east-2.compute.amazonaws.com:8090/scrap', [
+                $guzzleRes = $client->post('http://13.126.74.138:8090/scrap', [
                     RequestOptions::JSON => ['text' => $request->get('url')]
                 ]);
                 if ($guzzleRes->getStatusCode() === 200) {
